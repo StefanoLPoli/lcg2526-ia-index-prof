@@ -1,6 +1,6 @@
 let cities;
 function preload(){
-    cities = loadTable("cities.csv", "header");
+    cities = loadTable("../assets/datasets/cities.csv", "header");
 }
 function setup() {
   createCanvas(480, 240);
