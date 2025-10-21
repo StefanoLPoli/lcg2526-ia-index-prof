@@ -1,3 +1,4 @@
+//variabili globali
 let xMax = 400;
 let yMax = 600;
 
@@ -7,6 +8,7 @@ let yRocket = yMax*0.6;
 let table;
 let star_img;
 
+//caricare asset prima che la pagina web venga caricata
 function preload() {
   table = loadTable("stars.csv", "csv", "header");
   star_img = loadImage("star.png");

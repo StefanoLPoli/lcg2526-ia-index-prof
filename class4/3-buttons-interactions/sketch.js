@@ -48,6 +48,7 @@ function setup() {
   buttonText.mousePressed(newTextFunc);
 
 
+  //bottone del colore
   buttonRolling = createButton("roll the color!");
   buttonRolling.position(20, yMax - 100);
   buttonRolling.mousePressed(rollColor);
@@ -140,7 +141,7 @@ function draw() {
 }
 
 
-function isMouseOverRocket() { 
+  function isMouseOverRocket() { 
   return (mouseX > xRocket-(rocketWidth/2) &&
           mouseX < xRocket + (rocketWidth/2) &&
           mouseY > yRocket-(rocketHeight/2) &&
@@ -164,11 +165,14 @@ function keyPressed() { //https://p5js.org/reference/p5/keyPressed/
 }
 
 function rollColor(){
-  let  idx = random(1,7);
+  let  idx = random(0,7);
   //vogliamo solo numeri interi
   //intero inferiore, 1.1 --> 1
   // bckgcolor = floor(idx);
   //intero superiore, 1.1 --> 2
+  //un numero intero 
+  //tra 1 e 7
+  //indice per accedere all'array
   bckgcolor = colors[ceil(idx)];
   //redraw();
 }
