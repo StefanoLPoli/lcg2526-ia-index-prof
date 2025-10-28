@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Geo-Coder</title>
+</head>
+<body>
+    <input type="file" id="csvFile" accept=".csv">
+    <button onclick="processCSV()">Processa CSV</button>
+    <div id="output"></div>
+
+    <script>
+        async function getCoordinates(location) {
+            try {
+                const response = await fetch(
+                    `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(location)}&format=json&limit=1`
+                );
+                const data = await response.json();
+                
+                if (data.length > 0) {
+                    return {
+                        lat: parseFloat(data[0].lat),
+                        lon: parseFloat(data[0].lon),
+                        found: true
+                    };
+                }
+                return { found: false };
+            } catch (error) {
+                return { found: false, error: error.message };
+            }
+        }
+
+        function getFirstLocation(locationString) {
+            if (!locationString) return null;
+            return locationString.split(';')[0].trim();
+        }
+
+        async function processCSV() {
+            const fileInput = document.getElementById('csvFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Seleziona un file CSV');
+                return;
+            }
+
+            const text = await file.text();
+            const lines = text.split('\n');
+            const headers = lines[0].split(',');
+            
+            // Trova la colonna Location (cambia se necessario)
+            const locationIndex = headers.findIndex(h => 
+                h.toLowerCase().includes('location') || 
+                h.toLowerCase().includes('luogo')
+            );
+
+            if (locationIndex === -1) {
+                alert('Colonna "Location" non trovata');
+                return;
+            }
+
+            const locations = [];
+            for (let i = 1; i < lines.length; i++) {
+                if (lines[i].trim()) {
+                    const cells = lines[i].split(',');
+                    const locationField = cells[locationIndex];
+                    if (locationField) {
+                        const firstLocation = getFirstLocation(locationField);
+                        if (firstLocation && !locations.includes(firstLocation)) {
+                            locations.push(firstLocation);
+                        }
+                    }
+                }
+            }
+
+            const results = {};
+            const output = document.getElementById('output');
+            output.innerHTML = `Trovate ${locations.length} location<br>`;
+
+            for (let i = 0; i < locations.length; i++) {
+                const location = locations[i];
+                output.innerHTML += `Processando ${i+1}/${locations.length}: ${location}<br>`;
+                
+                const coords = await getCoordinates(location);
+                results[location] = coords;
+                
+                // Aspetta 1 secondo
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+
+            // Download del file
+            const dataStr = JSON.stringify(results, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'coordinates.json';
+            a.click();
+            
+            output.innerHTML += '<br><b>COMPLETATO! File coordinates.json scaricato</b>';
+        }
+    </script>
+</body>
+</html>

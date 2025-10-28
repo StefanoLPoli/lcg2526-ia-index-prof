@@ -1,0 +1,9 @@
+{
+  "name": "geo-coder",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "csv-parser": "^3.0.0",
+    "node-fetch": "^3.3.0"
+  }
+}
